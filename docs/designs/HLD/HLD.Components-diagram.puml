@@ -1,0 +1,25 @@
+' Use VSCode + PlantUML-plugin, to visualize
+
+@startuml
+
+title HLD.Components-diagram
+
+!include HLD.Entities.puml
+
+
+' relations
+Doctor --> HRM_app : uses, \n diagnoses
+Doctor --> patiant : examines
+
+HRM_app --> PulseMonitor : uses
+HRM_app --> app_DB : uses, \n imports
+HRM_app --> HS_MainDB : updates
+HRM_app --> export_report : generate
+
+PulseMonitor --> patiant : monitors
+PulseMonitor <-- HRM_app : privides \n samples
+
+Technician --> HRM_app : maintain
+Technician --> Doctor : supports
+
+@enduml

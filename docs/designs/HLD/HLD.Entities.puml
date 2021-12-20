@@ -1,0 +1,25 @@
+' Use VSCode + PlantUML-plugin, to visualize
+
+@startuml
+
+package "Actors" {
+    actor :Doctor: as Doctor
+    actor :Patiant: as patiant
+    actor :Technician: as Technician
+}
+
+package "Providers" {
+    component [Pulse Monitor] as PulseMonitor
+}
+
+package "HRM-Application" {
+    component [HRM-UI] as HRM_app
+    component [reports] as export_report
+    database [DB] as app_DB
+}
+
+package "Health-System" {
+    component [Main-DB] as HS_MainDB
+}
+
+@enduml
