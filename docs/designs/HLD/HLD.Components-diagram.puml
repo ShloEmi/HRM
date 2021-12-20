@@ -2,7 +2,7 @@
 
 @startuml
 
-title HLD.Components-diagram
+title HLD.Components-diagram \n
 
 !include HLD.Theme.puml
 !include HLD.Entities.puml

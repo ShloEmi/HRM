@@ -1,0 +1,38 @@
+' Use VSCode + PlantUML-plugin, to visualize
+
+@startuml
+
+title HLD.Workflow.heart rate recording \n
+
+!include HLD.Theme.puml
+
+skinparam Shadowing false
+
+
+participant "Pulse Monitor" as PulseMonitor
+participant "Recorder" as Recorder
+participant "HRM-UI" as HRM_UI
+participant "Timers" as Timers
+
+Timers <-- HRM_UI: (OnTakeSamplesExpire) \n per 60[Min]
+Recorder <-- HRM_UI: Start record
+
+Timers <-- Recorder: (OnSampleTimer) \n per 10[Sec], Impulse imidiatly
+
+loop 
+    Timers --> Recorder: OnSampleTimer
+
+    Recorder --> PulseMonitor: Get-HR-Sample
+    Recorder <-- PulseMonitor: HR-Sample
+
+    Recorder --> HRM_UI: OnHR-Sample(sample)
+    HRM_UI --> HRM_UI: Draw sample
+end
+
+Timers --> HRM_UI: OnTakeSamplesExpire
+
+Recorder <-- HRM_UI: Stop record
+
+
+
+@enduml
