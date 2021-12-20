@@ -1,0 +1,23 @@
+' Use VSCode + PlantUML-plugin, to visualize
+
+@startuml
+
+title HLD.Workflow.Display pulse and \n graph by time recorder \n
+
+!include HLD.Theme.puml
+
+skinparam Shadowing false
+
+
+participant "Pulse Monitor" as PulseMonitor
+participant "HRM-App" as HRM_app
+participant "HRM-UI" as HRM_UI
+
+
+HRM_app -> PulseMonitor: Connect
+HRM_app -> PulseMonitor: Start-listen
+
+HRM_app <-- PulseMonitor: HR-Samples over time
+HRM_app --> HRM_UI: Add sample
+
+@enduml

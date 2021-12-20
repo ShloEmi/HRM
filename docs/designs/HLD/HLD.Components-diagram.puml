@@ -4,6 +4,7 @@
 
 title HLD.Components-diagram
 
+!include HLD.Theme.puml
 !include HLD.Entities.puml
 
 
@@ -11,15 +12,14 @@ title HLD.Components-diagram
 Doctor --> HRM_app : uses, \n diagnoses
 Doctor --> patiant : examines
 
-HRM_app --> PulseMonitor : uses
 HRM_app --> app_DB : uses, \n imports
 HRM_app --> HS_MainDB : updates
 HRM_app --> export_report : generate
 
 PulseMonitor --> patiant : monitors
-PulseMonitor <-- HRM_app : privides \n samples
+PulseMonitor --> HRM_app : privides \n samples
 
-Technician --> HRM_app : maintain
+Technician --> HRM_app : maintains
 Technician --> Doctor : supports
 
 @enduml
