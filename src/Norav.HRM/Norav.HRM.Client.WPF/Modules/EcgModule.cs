@@ -1,7 +1,7 @@
 ﻿using Prism.Ioc;
 using Prism.Modularity;
 
-namespace Norav.HRM.Client.WPF
+namespace Norav.HRM.Client.WPF.Modules
 {
     public class EcgModule : IModule
     {

@@ -2,6 +2,8 @@
 using Prism.Modularity;
 using Prism.Unity;
 using System.Windows;
+using Norav.HRM.Client.WPF.Modules;
+using Norav.HRM.Client.WPF.Views;
 
 namespace Norav.HRM.Client.WPF
 {

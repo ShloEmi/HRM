@@ -1,7 +1,6 @@
-﻿using System.IO;
-using System.Linq;
+﻿using Norav.HRM.Client.WPF.Modules;
 
-namespace Norav.HRM.Client.WPF
+namespace Norav.HRM.Client.WPF.Views
 {
     public partial class MainWindow 
     {
