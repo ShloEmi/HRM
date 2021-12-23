@@ -6,8 +6,12 @@
                  xmlns:local="clr-namespace:Norav.HRM.Client.WPF"
                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                  mc:Ignorable="d"
-                 Title="MainWindow" Height="450" Width="800">
-    <Grid>
+                 Title="Heartbeat Test"
 
-    </Grid>
+                 Width="800" Height="600">
+    <DockPanel>
+        <WpfPlot Name="WpfPlot1" />
+
+    </DockPanel>
+
 </mah:MetroWindow>
