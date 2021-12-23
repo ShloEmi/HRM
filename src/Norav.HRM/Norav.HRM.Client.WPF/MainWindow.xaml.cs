@@ -5,7 +5,7 @@ namespace Norav.HRM.Client.WPF
 {
     public partial class MainWindow 
     {
-        public MainWindow()
+        public MainWindow(IECGAdapter ecgAdapter)
         {
             InitializeComponent();
 
@@ -16,6 +16,7 @@ namespace Norav.HRM.Client.WPF
             // WpfPlot1.Plot.AddScatter(dataX, dataY);
             WpfPlot1.Plot.AddSignal(dataY);
 #endif
+
 
             WpfPlot1.Refresh();
         }
