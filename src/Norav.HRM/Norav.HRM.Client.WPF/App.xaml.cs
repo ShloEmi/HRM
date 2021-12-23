@@ -1,17 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Prism.Ioc;
+using Prism.Unity;
 using System.Windows;
 
 namespace Norav.HRM.Client.WPF
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+    public partial class App
     {
+        protected override void OnStartup(StartupEventArgs args)
+        {
+            base.OnStartup(args);
+
+            new Bootstrapper().Run();
+        }
+    }
+
+    internal class Bootstrapper : PrismBootstrapper
+    {
+        protected override DependencyObject CreateShell()
+        {
+            return Container.Resolve<MainWindow>();
+        }
+
+        protected override void RegisterTypes(IContainerRegistry containerRegistry)
+        {
+            containerRegistry.RegisterSingleton<IECGAdapter, ECGAdapterSimulator>();
+        }
     }
 }

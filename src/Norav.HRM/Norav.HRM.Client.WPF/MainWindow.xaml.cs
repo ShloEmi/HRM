@@ -11,9 +11,10 @@ namespace Norav.HRM.Client.WPF
 
 #if false
             string[] readAllLines = File.ReadAllLines(@"ExampleData\ECG.data.csv");
-            double[] dataY = readAllLines.Take(10*1024).Select(double.Parse).ToArray();
-            double[] dataX = Enumerable.Range(0, dataY.Length).Select(i => (double)i).ToArray();
-            WpfPlot1.Plot.AddScatter(dataX, dataY);
+            double[] dataY = readAllLines/*.Take(10*1024)*/.Select(double.Parse).ToArray();
+            // double[] dataX = Enumerable.Range(0, dataY.Length).Select(i => (double)i).ToArray();
+            // WpfPlot1.Plot.AddScatter(dataX, dataY);
+            WpfPlot1.Plot.AddSignal(dataY);
 #endif
 
             WpfPlot1.Refresh();
