@@ -2,8 +2,9 @@
 
 namespace Norav.HRM.Client.WPF.Interfaces
 {
-    public interface IPlotProvider
+    public interface IPlotPresenter
     {
         Plot Plot { get; }
+        void Refresh(bool lowQuality = false);
     }
 }

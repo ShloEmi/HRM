@@ -19,11 +19,6 @@
                  d:DataContext="{d:DesignInstance {x:Type viewModels:MainWindowViewModel}, IsDesignTimeCreatable=True}"
                  >
 
-    <Window.CommandBindings>
-        <CommandBinding Command="ApplicationCommands.Close"
-                        Executed="CloseCommandHandler"/>
-    </Window.CommandBindings>
-
     <DockPanel>
         <WrapPanel DockPanel.Dock="Top" Margin="48,0,0,0" >
             <TextBlock Margin="0,0,0,22">
@@ -39,19 +34,11 @@
                 <Button Content="Start" Command="{Binding Start}" />
                 <Button Content="Stop" Command="{Binding Stop}" />
                 <Button Content="Print"  Command="{Binding Print}" />
-                <Button Content="Exit" Command="ApplicationCommands.Close" />
+                <Button Content="Exit" Command="{Binding Exit}" />
             </WrapPanel>
-
-
         </WrapPanel>
 
-        <WrapPanel DockPanel.Dock="Bottom" Margin="48,0,0,0" >
-            <TextBlock Margin="48,0,0,0"> <Run Text="Heartbeat graph" BaselineAlignment="Center" /> </TextBlock>
-        </WrapPanel>
-        <WpfPlot Name="WpfPlot1" 
-                 DockPanel.Dock="Top" />
-
-
+        <WpfPlot Name="PlotPresenter" DockPanel.Dock="Bottom" />
     </DockPanel>
 
 </mah:MetroWindow>

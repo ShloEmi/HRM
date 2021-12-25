@@ -1,29 +1,26 @@
-﻿using System.Windows.Input;
-using Norav.HRM.Client.WPF.Interfaces;
+﻿using Norav.HRM.Client.WPF.Interfaces;
 using Prism.Commands;
 using Prism.Mvvm;
+using System.IO.Abstractions;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
 
 namespace Norav.HRM.Client.WPF.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-        private readonly IPlotProvider plotProvider;
+        private readonly IPlotPresenter plotPresenter;
+        private readonly IFileSystem fileSystem;
 
         private string title;
         private string patientName;
         
-        public MainWindowViewModel(IPlotProvider plotProvider)
+        public MainWindowViewModel(IPlotPresenter plotPresenter, IFileSystem fileSystem)
         {
-            this.plotProvider = plotProvider;
+            this.plotPresenter = plotPresenter;
+            this.fileSystem = fileSystem;
             Title = "Heartbeat Test";
-
-
-#if false
-            string[] readAllLines = File.ReadAllLines(@"ExampleData\ECG.data.csv");
-            double[] dataY = readAllLines/*.Take(10*1024)*/.Select(double.Parse).ToArray();
-            this.plotProvider.Plot.AddSignal(dataY);
-#endif
-            plotProvider.Plot?.Title("title");
         }
 
 
@@ -44,6 +41,7 @@ namespace Norav.HRM.Client.WPF.ViewModels
         public ICommand Print => new DelegateCommand(ExecutePrint, CanExecutePrint);
         public ICommand Exit => new DelegateCommand(ExecuteExit, CanExecuteExit);
 
+
         private bool CanExecuteStart()
         {
             return true;
@@ -51,6 +49,11 @@ namespace Norav.HRM.Client.WPF.ViewModels
 
         private void ExecuteStart()
         {
+            string[] readAllLines = fileSystem.File.ReadAllLines(@"ExampleData\ECG.data.csv");
+            double[] dataY = readAllLines.Select(double.Parse).ToArray();
+            plotPresenter.Plot.AddSignal(dataY);
+            plotPresenter.Plot?.Title("Heartbeat graph");
+            plotPresenter.Refresh();
         }
 
         private bool CanExecuteStop()
@@ -78,6 +81,8 @@ namespace Norav.HRM.Client.WPF.ViewModels
 
         private void ExecuteExit()
         {
+            // exit logic...
+            Application.Current?.MainWindow?.Close();
         }
     }
 }
