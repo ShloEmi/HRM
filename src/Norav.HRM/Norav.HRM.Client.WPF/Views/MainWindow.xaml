@@ -13,9 +13,17 @@
 
                  Width="800" Height="600"
 
-                 d:DataContext="{d:DesignInstance {x:Type viewModels:MainWindowViewModel}, IsDesignTimeCreatable=True}"
+                 WindowStartupLocation="CenterScreen" WindowState="Maximized"
+                 
 
+                 d:DataContext="{d:DesignInstance {x:Type viewModels:MainWindowViewModel}, IsDesignTimeCreatable=True}"
                  >
+
+    <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.Close"
+                        Executed="CloseCommandHandler"/>
+    </Window.CommandBindings>
+
     <DockPanel>
         <WrapPanel DockPanel.Dock="Top" Margin="48,0,0,0" >
             <TextBlock Margin="0,0,0,22">
@@ -26,8 +34,24 @@
             </TextBlock>
         </WrapPanel>
 
+        <WrapPanel DockPanel.Dock="Right" Margin="48,0,0,0" >
+            <WrapPanel Orientation="Vertical">
+                <Button Content="Start" Command="{Binding Start}" />
+                <Button Content="Stop" Command="{Binding Stop}" />
+                <Button Content="Print"  Command="{Binding Print}" />
+                <Button Content="Exit" Command="ApplicationCommands.Close" />
+            </WrapPanel>
+
+
+        </WrapPanel>
+
+        <WrapPanel DockPanel.Dock="Bottom" Margin="48,0,0,0" >
+            <TextBlock Margin="48,0,0,0"> <Run Text="Heartbeat graph" BaselineAlignment="Center" /> </TextBlock>
+        </WrapPanel>
         <WpfPlot Name="WpfPlot1" 
                  DockPanel.Dock="Top" />
+
+
     </DockPanel>
 
 </mah:MetroWindow>

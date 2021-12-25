@@ -2,6 +2,7 @@
 using Norav.HRM.Client.WPF.Modules;
 using Prism.Ioc;
 using ScottPlot;
+using System.Windows.Input;
 
 namespace Norav.HRM.Client.WPF.Views
 {
@@ -13,8 +14,6 @@ namespace Norav.HRM.Client.WPF.Views
             containerRegistry.Register<IPlotProvider>(() => this);
 
             InitializeComponent();
-            
-            WpfPlot1.Refresh();
         }
         
 
@@ -24,5 +23,10 @@ namespace Norav.HRM.Client.WPF.Views
         /// https://github.com/ScottPlot/ScottPlot/blob/master/src/controls/ScottPlot.WPF/WpfPlot.xaml
         /// </remarks>
         public Plot Plot => WpfPlot1?.Plot;
+
+        private void CloseCommandHandler(object sender, ExecutedRoutedEventArgs args)
+        {
+            Close();
+        }
     }
 }
