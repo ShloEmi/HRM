@@ -5,15 +5,29 @@
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:viewModels="clr-namespace:Norav.HRM.Client.WPF.ViewModels"
                  mvvm:ViewModelLocator.AutoWireViewModel="True"
 
                  mc:Ignorable="d"
                  Title="{Binding Title}"
 
-                 Width="800" Height="600">
-    <DockPanel>
-        <WpfPlot Name="WpfPlot1" />
+                 Width="800" Height="600"
 
+                 d:DataContext="{d:DesignInstance {x:Type viewModels:MainWindowViewModel}, IsDesignTimeCreatable=True}"
+
+                 >
+    <DockPanel>
+        <WrapPanel DockPanel.Dock="Top" Margin="48,0,0,0" >
+            <TextBlock Margin="0,0,0,22">
+                <Run Text="PatientName" BaselineAlignment="Center"/>
+                <TextBox Text="{Binding PatientName}" 
+                         Margin="48,0,0,0"
+                         MinWidth="222"/>
+            </TextBlock>
+        </WrapPanel>
+
+        <WpfPlot Name="WpfPlot1" 
+                 DockPanel.Dock="Top" />
     </DockPanel>
 
 </mah:MetroWindow>
