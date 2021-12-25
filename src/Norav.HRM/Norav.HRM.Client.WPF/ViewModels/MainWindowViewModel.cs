@@ -3,7 +3,6 @@ using Norav.HRM.Client.WPF.Modules;
 using Prism.Commands;
 using Prism.Mvvm;
 using System.IO.Abstractions;
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -11,8 +10,6 @@ namespace Norav.HRM.Client.WPF.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-        private readonly IPlotPresenter plotPresenter;
-        private readonly IFileSystem fileSystem;
         private readonly IEcgProvider iecgProvider;
 
         private string title;
@@ -20,8 +17,6 @@ namespace Norav.HRM.Client.WPF.ViewModels
         
         public MainWindowViewModel(IPlotPresenter plotPresenter, IFileSystem fileSystem, IEcgProvider iecgProvider)
         {
-            this.plotPresenter = plotPresenter;
-            this.fileSystem = fileSystem;
             this.iecgProvider = iecgProvider;
             Title = "Heartbeat Test";
         }
@@ -53,11 +48,6 @@ namespace Norav.HRM.Client.WPF.ViewModels
         private void ExecuteStart()
         {
             iecgProvider.Start();
-            string[] readAllLines = fileSystem.File.ReadAllLines(@"ExampleData\ECG.data.csv");
-            double[] dataY = readAllLines.Select(double.Parse).ToArray();
-            plotPresenter.Plot.AddSignal(dataY);
-            plotPresenter.Plot?.Title("Heartbeat graph");
-            plotPresenter.Refresh();
         }
 
         private bool CanExecuteStop()
