@@ -10,14 +10,14 @@ namespace Norav.HRM.Client.WPF.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-        private readonly IEcgProvider iecgProvider;
+        private readonly IEcgProvider ecgProvider;
 
         private string title;
         private string patientName;
         
-        public MainWindowViewModel(IPlotPresenter plotPresenter, IFileSystem fileSystem, IEcgProvider iecgProvider)
+        public MainWindowViewModel(IPlotPresenter plotPresenter, IFileSystem fileSystem, IEcgProvider ecgProvider)
         {
-            this.iecgProvider = iecgProvider;
+            this.ecgProvider = ecgProvider;
             Title = "Heartbeat Test";
         }
 
@@ -47,7 +47,7 @@ namespace Norav.HRM.Client.WPF.ViewModels
 
         private void ExecuteStart()
         {
-            iecgProvider.Start();
+            ecgProvider.Start();
         }
 
         private bool CanExecuteStop()
@@ -57,7 +57,7 @@ namespace Norav.HRM.Client.WPF.ViewModels
 
         private void ExecuteStop()
         {
-            iecgProvider.Stop();
+            ecgProvider.Stop();
         }
 
         private bool CanExecutePrint()
