@@ -1,5 +1,4 @@
 ﻿using Norav.HRM.Client.WPF.Interfaces;
-using Norav.HRM.Client.WPF.Modules;
 using Prism.Ioc;
 using ScottPlot;
 
@@ -7,10 +6,10 @@ namespace Norav.HRM.Client.WPF.Views
 {
     public partial class MainWindow : IPlotPresenter
     {
-        public MainWindow(IECGAdapter ecgAdapter, IContainerRegistry containerRegistry)
+        public MainWindow(IContainerRegistry containerRegistry)
         {
             // REMARKS: workaround for: 'plot not supporting MVVM'
-            containerRegistry.Register<IPlotPresenter>(() => this);
+            containerRegistry.Register<IPlotPresenter>(() => this); /* TODO: Shlomi, can this workaround be avoided? */
 
             InitializeComponent();
         }
