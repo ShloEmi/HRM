@@ -1,6 +1,9 @@
 ﻿using Norav.HRM.Client.WPF.Modules;
 using Prism.Commands;
 using Prism.Mvvm;
+using System;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Windows;
 
 namespace Norav.HRM.Client.WPF.ViewModels
@@ -12,6 +15,7 @@ namespace Norav.HRM.Client.WPF.ViewModels
         private string title;
         private string patientName = "John Doe";
         private double? sampleIntervalSec = 10;
+        private double? testTimeMin = 60;
         private bool isExecuting;
 
 
@@ -19,8 +23,31 @@ namespace Norav.HRM.Client.WPF.ViewModels
         {
             this.ecgProvider = ecgProvider;
             Title = "Heartbeat Test";
+
+            ecgProvider.TestStateChanged
+                    .ObserveOn(DispatcherScheduler.Current)
+                    .Subscribe(OnTestStateChanged);
         }
 
+
+        private void OnTestStateChanged(TestState testState)
+        {
+            switch (testState)
+            {
+                case TestState.Started:
+                    /* TODO: Shlomi, log */
+                    break;
+                case TestState.Stopped:
+                    /* TODO: Shlomi, log */
+                    break;
+                case TestState.TestTimeOver:
+                    ExecuteStop();
+                    break;
+                default:
+                    /* TODO: Shlomi, log */
+                    throw new ArgumentOutOfRangeException(nameof(testState), testState, null);
+            }
+        }
 
         public string Title
         {
@@ -40,6 +67,12 @@ namespace Norav.HRM.Client.WPF.ViewModels
             set => SetProperty(ref sampleIntervalSec, value);
         }
 
+        public double? TestTimeMin
+        {
+            get => testTimeMin;
+            set => SetProperty(ref testTimeMin, value);
+        }
+
         public bool IsExecuting
         {
             get => isExecuting;
@@ -56,7 +89,7 @@ namespace Norav.HRM.Client.WPF.ViewModels
         private void ExecuteStart()
         {
             IsExecuting = true;
-            ecgProvider.Start(sampleIntervalSec);
+            ecgProvider.Start(sampleIntervalSec, testTimeMin);
         }
 
         private void ExecuteStop()

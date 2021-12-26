@@ -33,7 +33,10 @@
                 <Button Content="Stop" Command="{Binding Stop}" 
                         Visibility="{Binding IsExecuting, Converter={StaticResource BooleanToVisibility}}" />
 
-                <mah:NumericUpDown Value="{Binding SampleIntervalSec}" ToolTip="Sample Interval [Sec]" Minimum="0.01" NumericInputMode="Decimal" ParsingNumberStyle="Float" StringFormat="0.##" />
+                <mah:NumericUpDown Value="{Binding SampleIntervalSec}" ToolTip="Sample Interval [Sec]" Minimum="0.01" Maximum="60"
+                                   NumericInputMode="Decimal" ParsingNumberStyle="Float" StringFormat="0.##" />
+                <mah:NumericUpDown Value="{Binding TestTimeMin}" ToolTip="Test Time [Min]" Minimum="0.1" Maximum="600"
+                                   NumericInputMode="Decimal" ParsingNumberStyle="Float" StringFormat="0.##" />
                 <Separator />
                 <Button Content="Print"  Command="{Binding Print}" />
                 <Separator />

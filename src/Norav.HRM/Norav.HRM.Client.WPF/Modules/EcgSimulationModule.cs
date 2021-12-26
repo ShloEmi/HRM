@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace Norav.HRM.Client.WPF.Modules
 {
@@ -14,6 +15,7 @@ namespace Norav.HRM.Client.WPF.Modules
     {
         private readonly CompositeDisposable eventSubscription = new();
         private CompositeDisposable startTimerSubscription;
+        private readonly Subject<TestState> testStateChanged = new();
 
         private readonly IPlotPresenter plotPresenter;
 
@@ -23,7 +25,7 @@ namespace Norav.HRM.Client.WPF.Modules
         private readonly Random randomGenerator;
 
         private readonly double refreshRateHz = 1d / 5d;
-
+        
 
         public EcgSimulationProvider(IApplicationEvents applicationEvents, IPlotPresenter plotPresenter)
         {
@@ -34,6 +36,7 @@ namespace Norav.HRM.Client.WPF.Modules
             eventSubscription.Add(applicationEvents.Starting.Subscribe(OnStarting));
             eventSubscription.Add(applicationEvents.Exiting.Subscribe(OnExiting));
         }
+
 
         private void OnInitialized(Unit _)
         {
@@ -58,12 +61,20 @@ namespace Norav.HRM.Client.WPF.Modules
 
 
         /// <param name="sampleIntervalSec"></param>
+        /// <param name="testTimeMin"></param>
         /// <seealso cref="https://github.com/ScottPlot/ScottPlot/blob/master/src/demo/ScottPlot.Demo.WPF/WpfDemos/LiveDataGrowing.xaml.cs"/>
-        void IEcgProvider.Start(double? sampleIntervalSec)
+        void IEcgProvider.Start(double? sampleIntervalSec, double? testTimeMin)
         {
             double sampleIntervalSecValue = 10;
+            double testTimeMinValue = 60;
+
             if (sampleIntervalSec != null)
                 sampleIntervalSecValue = sampleIntervalSec.Value;
+            if (testTimeMin != null)
+                testTimeMinValue = testTimeMin.Value;
+
+
+            testStateChanged.OnNext(TestState.Started);
 
             startTimerSubscription = new CompositeDisposable
             {
@@ -74,7 +85,11 @@ namespace Norav.HRM.Client.WPF.Modules
                 Observable
                     .Interval(TimeSpan.FromSeconds(refreshRateHz))
                     .ObserveOn(DispatcherScheduler.Current)
-                    .Subscribe(OnRender)
+                    .Subscribe(OnRender),
+                Observable
+                    .Interval(TimeSpan.FromMinutes(testTimeMinValue))
+                    .ObserveOn(DispatcherScheduler.Current)
+                    .Subscribe(OnTestTimeOver)
             };
         }
 
@@ -105,19 +120,38 @@ namespace Norav.HRM.Client.WPF.Modules
             nextDataIndex += 1;
         }
 
+        private void OnTestTimeOver(long elapsed)
+        {
+            ((IEcgProvider)this).Stop();
+            testStateChanged.OnNext(TestState.TestTimeOver);
+        }
+
         void IEcgProvider.Stop()
         {
-            startTimerSubscription.Clear();
+            startTimerSubscription?.Clear();
             startTimerSubscription = null;
 
             nextDataIndex = 1;
+
+            testStateChanged.OnNext(TestState.Stopped);
         }
+
+
+        public IObservable<TestState> TestStateChanged => testStateChanged;
+    }
+
+    public enum TestState
+    {
+        Started,
+        Stopped,
+        TestTimeOver
     }
 
     public interface IEcgProvider
     {
-        void Start(double? sampleIntervalSec);
+        void Start(double? sampleIntervalSec, double? testTimeMin);
         void Stop();
+        IObservable<TestState> TestStateChanged { get; }
     }
 
     public class EcgSimulationModule : IModule
