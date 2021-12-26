@@ -2,12 +2,14 @@
 using Norav.HRM.Client.WPF.Interfaces;
 using ScottPlot.Plottable;
 using System;
+using System.Drawing;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
+using ScottPlot;
 
 namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
 {
@@ -27,7 +29,9 @@ namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
         private readonly Random randomGenerator;
 
         private readonly double refreshRateHz = 1d / 5d;
-        
+        private HLine hLine;
+        private VLine vLine;
+
 
         public EcgSimulationProvider(IApplicationEvents applicationEvents, IPlotPresenter plotPresenter)
         {
@@ -42,13 +46,34 @@ namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
 
         private void OnInitialized(Unit _)
         {
-            plotPresenter.Plot.YLabel("Value");
-            plotPresenter.Plot.XLabel("Sample");
+            Plot plot = plotPresenter.Plot;
+            plot.YLabel("Value");
+            plot.XLabel("Sample");
 
-            plotPresenter.Plot?.Title("Heartbeat graph", false);
+            plot.Title("Heartbeat graph", false);
+            plot.Style(Style.Burgundy);
 
-            signalPlot = plotPresenter.Plot.AddSignal(dataBuffer);
+            InitHelperLines(plot);
+
+            signalPlot = plot.AddSignal(dataBuffer, 1d, Color.Black);
             plotPresenter.Refresh();
+        }
+
+        private void InitHelperLines(Plot plot)
+        {
+            // add helper lines
+            hLine = plot.AddHorizontalLine(0);
+            hLine.LineWidth = 2;
+            hLine.PositionLabel = true;
+            hLine.PositionLabelBackground = hLine.Color;
+            hLine.DragEnabled = true;
+
+            vLine = plot.AddVerticalLine(0);
+            vLine.LineWidth = 2;
+            vLine.PositionLabel = true;
+            vLine.PositionLabelBackground = vLine.Color;
+            vLine.DragEnabled = true;
+            vLine.PositionFormatter = x => $"X={x:F2}";
         }
 
         private void OnStarting(Unit _)
@@ -78,6 +103,8 @@ namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
             if (testTimeMin != null)
                 testTimeMinValue = testTimeMin.Value;
 
+            hLine.Y = 0;
+            vLine.X = 0;
 
             testStateChanged.OnNext(TestState.Started);
 

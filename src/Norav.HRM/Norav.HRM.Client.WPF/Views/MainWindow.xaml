@@ -37,7 +37,7 @@
             <mah:NumericUpDown Value="{Binding TestTimeMin}" ToolTip="Test Time [Min]" Minimum="0.1" Maximum="600"
                                NumericInputMode="Decimal" ParsingNumberStyle="Float" StringFormat="0.##" />
             <Separator />
-            <Button Content="Print"  Command="{Binding Print}" />
+            <Button Content="Print"  Command="{Binding Print}" ToolTip="Will export to Reports folder.." />
             <Separator />
             <Button Content="Exit" Command="{Binding Exit}" />
         </WrapPanel>
