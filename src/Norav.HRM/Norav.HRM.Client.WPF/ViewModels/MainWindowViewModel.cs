@@ -1,5 +1,5 @@
 ﻿using log4net;
-using Norav.HRM.Client.WPF.Modules;
+using Norav.HRM.Client.WPF.Modules.EcgSimulation;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;

@@ -1,17 +1,15 @@
-﻿using log4net;
-using Norav.HRM.Client.WPF.Interfaces;
-using Prism.Ioc;
-using Prism.Modularity;
-using ScottPlot.Plottable;
-using System;
+﻿using System;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
+using log4net;
+using Norav.HRM.Client.WPF.Interfaces;
+using ScottPlot.Plottable;
 
-namespace Norav.HRM.Client.WPF.Modules
+namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
 {
     public class EcgSimulationProvider : IEcgProvider
     {
@@ -133,33 +131,5 @@ namespace Norav.HRM.Client.WPF.Modules
 
 
         public IObservable<TestState> TestStateChanged => testStateChanged;
-    }
-
-    public enum TestState
-    {
-        Started,
-        Stopped,
-        TestTimeOver
-    }
-
-    public interface IEcgProvider
-    {
-        void Start(double? sampleIntervalSec, double? testTimeMin);
-        void Stop();
-        IObservable<TestState> TestStateChanged { get; }
-    }
-
-    public class EcgSimulationModule : IModule
-    {
-        /* TODO: Shlomi, put in self assembly! */
-        /* TODO: Shlomi, load from config file, to be able to switch to diff provider */
-        public void OnInitialized(IContainerProvider containerProvider)
-        {
-        }
-
-        public void RegisterTypes(IContainerRegistry containerRegistry)
-        {
-            containerRegistry.Register<IEcgProvider, EcgSimulationProvider>();
-        }
     }
 }

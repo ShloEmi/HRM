@@ -9,6 +9,7 @@ using System.IO.Abstractions;
 using System.Reactive;
 using System.Reactive.Subjects;
 using System.Windows;
+using Norav.HRM.Client.WPF.Modules.EcgSimulation;
 
 namespace Norav.HRM.Client.WPF
 {
