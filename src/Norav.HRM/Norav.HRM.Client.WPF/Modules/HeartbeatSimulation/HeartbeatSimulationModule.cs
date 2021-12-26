@@ -1,9 +1,9 @@
 ﻿using Prism.Ioc;
 using Prism.Modularity;
 
-namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
+namespace Norav.HRM.Client.WPF.Modules.HeartbeatSimulation
 {
-    public class EcgSimulationModule : IModule
+    public class HeartbeatSimulationModule : IModule
     {
         /* TODO: Shlomi, put in self assembly! */
         /* TODO: Shlomi, load from config file, to be able to switch to diff provider */
@@ -13,7 +13,7 @@ namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
 
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
-            containerRegistry.Register<IEcgProvider, EcgSimulationProvider>();
+            containerRegistry.Register<IHeartbeatProvider, HeartbeatSimulationProvider>();
         }
     }
 }

@@ -11,16 +11,16 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
 
-namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
+namespace Norav.HRM.Client.WPF.Modules.HeartbeatSimulation
 {
-    public class EcgSimulationProvider : IEcgProvider
+    public class HeartbeatSimulationProvider : IHeartbeatProvider
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
         private readonly CompositeDisposable eventSubscription = new();
         private CompositeDisposable startTimerSubscription;
         private readonly Subject<TestState> testStateChanged = new();
-        private readonly Subject<double> ecgSamples = new();
+        private readonly Subject<double> heartbeatSamples = new();
         
 
         private readonly IPlotPresenter plotPresenter;
@@ -35,7 +35,7 @@ namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
         private VLine vLine;
 
 
-        public EcgSimulationProvider(IApplicationEvents applicationEvents, IPlotPresenter plotPresenter)
+        public HeartbeatSimulationProvider(IApplicationEvents applicationEvents, IPlotPresenter plotPresenter)
         {
             this.plotPresenter = plotPresenter;
             randomGenerator = new Random();
@@ -96,7 +96,7 @@ namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
         /// <param name="sampleIntervalSec"></param>
         /// <param name="testTimeMin"></param>
         /// <seealso cref="https://github.com/ScottPlot/ScottPlot/blob/master/src/demo/ScottPlot.Demo.WPF/WpfDemos/LiveDataGrowing.xaml.cs"/>
-        void IEcgProvider.Start(double? sampleIntervalSec, double? testTimeMin)
+        void IHeartbeatProvider.Start(double? sampleIntervalSec, double? testTimeMin)
         {
             double sampleIntervalSecValue = 10;
             double testTimeMinValue = 60;
@@ -116,7 +116,7 @@ namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
                 Observable
                     .Interval(TimeSpan.FromSeconds(sampleIntervalSecValue))
                     .ObserveOn(DispatcherScheduler.Current)
-                    .Subscribe(OnEcgSamples),
+                    .Subscribe(OnHeartbeatSamples),
                 Observable
                     .Interval(TimeSpan.FromSeconds(refreshRateHz))
                     .ObserveOn(DispatcherScheduler.Current)
@@ -134,7 +134,7 @@ namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
             plotPresenter.Refresh();
         }
 
-        private void OnEcgSamples(long elapsed)
+        private void OnHeartbeatSamples(long elapsed)
         {
             double randomEcg = Math.Round(randomGenerator.NextDouble()*3 - 1.5, 3);
             double lastValue = dataBuffer[nextDataIndex - 1];
@@ -151,16 +151,16 @@ namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
             
             nextDataIndex += 1;
 
-            ecgSamples.OnNext(nextEcg);
+            heartbeatSamples.OnNext(nextEcg);
         }
 
         private void OnTestTimeOver(long elapsed)
         {
-            ((IEcgProvider)this).Stop();
+            ((IHeartbeatProvider)this).Stop();
             testStateChanged.OnNext(TestState.TestTimeOver);
         }
 
-        void IEcgProvider.Stop()
+        void IHeartbeatProvider.Stop()
         {
             startTimerSubscription?.Clear();
             startTimerSubscription = null;
@@ -172,6 +172,6 @@ namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
 
 
         public IObservable<TestState> TestStateChanged => testStateChanged;
-        public IObservable<double> EcgSamples => ecgSamples;
+        public IObservable<double> HeartbeatSamples => heartbeatSamples;
     }
 }

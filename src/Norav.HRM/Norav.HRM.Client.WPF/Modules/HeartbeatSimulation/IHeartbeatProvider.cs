@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
+namespace Norav.HRM.Client.WPF.Modules.HeartbeatSimulation
 {
-    public interface IEcgProvider
+    public interface IHeartbeatProvider
     {
         void Start(double? sampleIntervalSec, double? testTimeMin);
         void Stop();
 
         IObservable<TestState> TestStateChanged { get; }
-        IObservable<double> EcgSamples { get; }
+        IObservable<double> HeartbeatSamples { get; }
 
     }
 

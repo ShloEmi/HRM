@@ -1,6 +1,5 @@
 ﻿using log4net;
 using Norav.HRM.Client.WPF.Interfaces;
-using Norav.HRM.Client.WPF.Modules.EcgSimulation;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
@@ -11,6 +10,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reflection;
 using System.Windows;
+using Norav.HRM.Client.WPF.Modules.HeartbeatSimulation;
 
 namespace Norav.HRM.Client.WPF.ViewModels
 {
@@ -19,7 +19,7 @@ namespace Norav.HRM.Client.WPF.ViewModels
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
         private static readonly string ReportsFolder = "Reports";
 
-        private readonly IEcgProvider ecgProvider;
+        private readonly IHeartbeatProvider heartbeatProvider;
         private readonly IPlotPresenter plotPresenter;
         private readonly IFileSystem fileSystem;
 
@@ -32,24 +32,24 @@ namespace Norav.HRM.Client.WPF.ViewModels
 
 
 
-        public MainWindowViewModel(IEcgProvider ecgProvider, IPlotPresenter plotPresenter, IFileSystem fileSystem, IScheduler dispatcherScheduler)
+        public MainWindowViewModel(IHeartbeatProvider heartbeatProvider, IPlotPresenter plotPresenter, IFileSystem fileSystem, IScheduler dispatcherScheduler)
         {
-            this.ecgProvider = ecgProvider;
+            this.heartbeatProvider = heartbeatProvider;
             this.plotPresenter = plotPresenter;
             this.fileSystem = fileSystem;
             Title = "Heartbeat Test";
 
-            ecgProvider.TestStateChanged
+            heartbeatProvider.TestStateChanged
                 .ObserveOn(dispatcherScheduler)
                 .Subscribe(OnTestStateChanged);
-            ecgProvider.EcgSamples
+            heartbeatProvider.HeartbeatSamples
                 .Sample(TimeSpan.FromSeconds(1))
                 .ObserveOn(dispatcherScheduler)
-                .Subscribe(OnEcgSample);
+                .Subscribe(OnHeartbeatSample);
         }
 
 
-        private void OnEcgSample(double ecgSample) => 
+        private void OnHeartbeatSample(double ecgSample) => 
             BPM = ecgSample;
 
         private void OnTestStateChanged(TestState testState)
@@ -121,13 +121,13 @@ namespace Norav.HRM.Client.WPF.ViewModels
         private void ExecuteStart()
         {
             IsExecuting = true;
-            ecgProvider.Start(sampleIntervalSec, testTimeMin);
+            heartbeatProvider.Start(sampleIntervalSec, testTimeMin);
         }
 
         private void ExecuteStop()
         {
             IsExecuting = false;
-            ecgProvider.Stop();
+            heartbeatProvider.Stop();
         }
 
         private void ExecutePrint()

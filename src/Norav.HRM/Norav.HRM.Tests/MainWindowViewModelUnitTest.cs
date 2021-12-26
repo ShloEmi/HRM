@@ -3,7 +3,6 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Reactive.Testing;
 using Norav.HRM.Client.WPF.Interfaces;
-using Norav.HRM.Client.WPF.Modules.EcgSimulation;
 using Norav.HRM.Client.WPF.ViewModels;
 using NUnit.Framework;
 using System;
@@ -11,6 +10,7 @@ using System.Collections.Generic;
 using System.IO.Abstractions;
 using System.IO.Abstractions.TestingHelpers;
 using System.Reactive.Concurrency;
+using Norav.HRM.Client.WPF.Modules.HeartbeatSimulation;
 
 namespace Norav.HRM.Tests.Windows
 {
@@ -23,7 +23,7 @@ namespace Norav.HRM.Tests.Windows
         {
             var services = new ServiceCollection();
 
-            var ecgProvider = A.Fake<IEcgProvider>();
+            var ecgProvider = A.Fake<IHeartbeatProvider>();
             var plotPresenter = A.Fake<IPlotPresenter>();
             
             services.AddTransient(_ => ecgProvider);

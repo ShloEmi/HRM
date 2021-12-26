@@ -1,5 +1,4 @@
 ﻿using Norav.HRM.Client.WPF.Interfaces;
-using Norav.HRM.Client.WPF.Modules.EcgSimulation;
 using Norav.HRM.Client.WPF.Views;
 using Prism.Ioc;
 using Prism.Modularity;
@@ -10,6 +9,7 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
 using System.Windows;
+using Norav.HRM.Client.WPF.Modules.HeartbeatSimulation;
 using Norav.HRM.Client.WPF.ViewModels;
 
 namespace Norav.HRM.Client.WPF
@@ -34,17 +34,17 @@ namespace Norav.HRM.Client.WPF
             containerRegistry.RegisterSingleton<IContainerRegistry>(() => containerRegistry);
             containerRegistry.RegisterSingleton<IApplicationEvents>(() => this);
 
-            containerRegistry.RegisterSingleton<IEcgProvider, EcgSimulationProvider>();
+            containerRegistry.RegisterSingleton<IHeartbeatProvider, HeartbeatSimulationProvider>();
             containerRegistry.RegisterSingleton<IFileSystem, FileSystem>();
 
             containerRegistry.RegisterSingleton<MainWindowViewModel>(provider => new MainWindowViewModel(
-                provider.Resolve<IEcgProvider>(), provider.Resolve<IPlotPresenter>(), provider.Resolve<IFileSystem>(), 
+                provider.Resolve<IHeartbeatProvider>(), provider.Resolve<IPlotPresenter>(), provider.Resolve<IFileSystem>(), 
                 DispatcherScheduler.Current));
 
         }
 
         protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog) => 
-            moduleCatalog.AddModule<EcgSimulationModule>();
+            moduleCatalog.AddModule<HeartbeatSimulationModule>();
 
         protected override DependencyObject CreateShell() => 
             Container.Resolve<MainWindow>();
