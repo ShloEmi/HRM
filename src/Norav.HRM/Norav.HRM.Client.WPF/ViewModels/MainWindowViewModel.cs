@@ -12,6 +12,7 @@ namespace Norav.HRM.Client.WPF.ViewModels
 
         private string title;
         private string patientName = "John Doe";
+        private double? sampleIntervalSec = 10;
         
         public MainWindowViewModel(IEcgProvider ecgProvider)
         {
@@ -32,49 +33,78 @@ namespace Norav.HRM.Client.WPF.ViewModels
             set => SetProperty(ref patientName, value);
         }
 
-        public ICommand Start => new DelegateCommand(ExecuteStart, CanExecuteStart);
-        public ICommand Stop => new DelegateCommand(ExecuteStop, CanExecuteStop);
-        public ICommand Print => new DelegateCommand(ExecutePrint, CanExecutePrint);
-        public ICommand Exit => new DelegateCommand(ExecuteExit, CanExecuteExit);
-
-
-        private bool CanExecuteStart()
+        public double? SampleIntervalSec
         {
-            return true;
+            get => sampleIntervalSec;
+            set => SetProperty(ref sampleIntervalSec, value);
         }
+
+
+        public DelegateCommand Start => new(ExecuteStart, CanExecuteStart);
+        public DelegateCommand Stop => new(ExecuteStop, CanExecuteStop);
+        public DelegateCommand Print => new(ExecutePrint, CanExecutePrint);
+        public DelegateCommand Exit => new(ExecuteExit, CanExecuteExit);
+
+
+        private bool canExecuteStart = true;
+        private bool CanExecuteStart() => 
+            canExecuteStart;
 
         private void ExecuteStart()
         {
-            ecgProvider.Start();
+            if (!canExecuteStart)
+                return;
+
+            canExecuteStart = false;
+            canExecuteStop = true;
+
+            ecgProvider.Start(sampleIntervalSec);
+
+            UpdateCanExecuteStartStopCommands();
         }
 
-        private bool CanExecuteStop()
+        private void UpdateCanExecuteStartStopCommands()
         {
-            return true;
+            /* TODO: Shlomi, for some reason this is not working?! */
+            Start.RaiseCanExecuteChanged();
+            Stop.RaiseCanExecuteChanged();
+            // CommandManager.InvalidateRequerySuggested();
         }
+
+        private bool canExecuteStop;
+        private bool CanExecuteStop() => 
+            canExecuteStop;
 
         private void ExecuteStop()
         {
+            if (!canExecuteStop)
+                return;
+
+            canExecuteStart = true;
+            canExecuteStop = false;
+
+            UpdateCanExecuteStartStopCommands();
+
             ecgProvider.Stop();
         }
 
-        private bool CanExecutePrint()
-        {
-            return true;
-        }
+        private bool canExecutePrint = true;
+        private bool CanExecutePrint() => 
+            canExecutePrint;
 
         private void ExecutePrint()
         {
         }
 
-        private bool CanExecuteExit()
-        {
-            return true;
-        }
+        private bool canExecuteExit = true;
+        private bool CanExecuteExit() => 
+            canExecuteExit;
 
         private void ExecuteExit()
         {
-            // exit logic...
+            if (!canExecuteStart)
+                ExecuteStop();
+
             Application.Current?.MainWindow?.Close();
         }
     }

@@ -7,28 +7,28 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Windows.Threading;
 
 namespace Norav.HRM.Client.WPF.Modules
 {
     public class EcgSimulationProvider : IEcgProvider
     {
         private readonly CompositeDisposable eventSubscription = new();
-        private readonly CompositeDisposable startTimerSubscription = new();
+        private CompositeDisposable startTimerSubscription;
 
         private readonly IPlotPresenter plotPresenter;
 
         private readonly double[] dataBuffer = new double[1_000_000];
-        int nextDataIndex = 1;
-        SignalPlot signalPlot;
-        readonly Random rand;
+        private int nextDataIndex = 1;
+        private SignalPlot signalPlot;
+        private readonly Random randomGenerator;
 
+        private readonly double refreshRateHz = 1d / 5d;
 
 
         public EcgSimulationProvider(IApplicationEvents applicationEvents, IPlotPresenter plotPresenter)
         {
             this.plotPresenter = plotPresenter;
-            rand = new Random(0);
+            randomGenerator = new Random();
 
             eventSubscription.Add(applicationEvents.Initializing.Subscribe(OnInitialized));
             eventSubscription.Add(applicationEvents.Starting.Subscribe(OnStarting));
@@ -53,22 +53,29 @@ namespace Norav.HRM.Client.WPF.Modules
         private void OnExiting(Unit _)
         {
             eventSubscription.Clear();
-            startTimerSubscription.Dispose();
+            startTimerSubscription?.Clear();
         }
 
 
+        /// <param name="sampleIntervalSec"></param>
         /// <seealso cref="https://github.com/ScottPlot/ScottPlot/blob/master/src/demo/ScottPlot.Demo.WPF/WpfDemos/LiveDataGrowing.xaml.cs"/>
-        void IEcgProvider.Start()
+        void IEcgProvider.Start(double? sampleIntervalSec)
         {
-            startTimerSubscription.Add(Observable
-                .Interval(TimeSpan.FromSeconds(1d/1000d /*Hz*/))
-                .ObserveOn(DispatcherScheduler.Current)
-                .Subscribe(OnEcgSamples));
+            double sampleIntervalSecValue = 10;
+            if (sampleIntervalSec != null)
+                sampleIntervalSecValue = sampleIntervalSec.Value;
 
-            startTimerSubscription.Add(Observable
-                .Interval(TimeSpan.FromSeconds(1d/5d /*Hz*/))
-                .ObserveOn(DispatcherScheduler.Current)
-                .Subscribe(OnRender));
+            startTimerSubscription = new CompositeDisposable
+            {
+                Observable
+                    .Interval(TimeSpan.FromSeconds(sampleIntervalSecValue))
+                    .ObserveOn(DispatcherScheduler.Current)
+                    .Subscribe(OnEcgSamples),
+                Observable
+                    .Interval(TimeSpan.FromSeconds(refreshRateHz))
+                    .ObserveOn(DispatcherScheduler.Current)
+                    .Subscribe(OnRender)
+            };
         }
 
         private void OnRender(long elapsed)
@@ -90,7 +97,7 @@ namespace Norav.HRM.Client.WPF.Modules
                 //   5. continue to update the new array
             }
 
-            double randomValue = Math.Round(rand.NextDouble() - .5, 3);
+            double randomValue = Math.Round(randomGenerator.NextDouble() - .5, 3);
             double latestValue = dataBuffer[nextDataIndex - 1] + randomValue;
             dataBuffer[nextDataIndex] = latestValue;
             signalPlot.MaxRenderIndex = nextDataIndex;
@@ -101,6 +108,7 @@ namespace Norav.HRM.Client.WPF.Modules
         void IEcgProvider.Stop()
         {
             startTimerSubscription.Clear();
+            startTimerSubscription = null;
 
             nextDataIndex = 1;
         }
@@ -108,7 +116,7 @@ namespace Norav.HRM.Client.WPF.Modules
 
     public interface IEcgProvider
     {
-        void Start();
+        void Start(double? sampleIntervalSec);
         void Stop();
     }
 
