@@ -17,6 +17,7 @@ namespace Norav.HRM.Client.WPF.ViewModels
     public class MainWindowViewModel : BindableBase
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
+        private static readonly string ReportsFolder = "Reports";
 
         private readonly IEcgProvider ecgProvider;
         private readonly IPlotPresenter plotPresenter;
@@ -27,7 +28,8 @@ namespace Norav.HRM.Client.WPF.ViewModels
         private double? sampleIntervalSec = 10;
         private double? testTimeMin = 60;
         private bool isExecuting;
-        private static readonly string ReportsFolder = "Reports";
+        private double bpm;
+
 
 
         public MainWindowViewModel(IEcgProvider ecgProvider, IPlotPresenter plotPresenter, IFileSystem fileSystem, IScheduler dispatcherScheduler)
@@ -38,10 +40,17 @@ namespace Norav.HRM.Client.WPF.ViewModels
             Title = "Heartbeat Test";
 
             ecgProvider.TestStateChanged
-                    .ObserveOn(dispatcherScheduler)
-                    .Subscribe(OnTestStateChanged);
+                .ObserveOn(dispatcherScheduler)
+                .Subscribe(OnTestStateChanged);
+            ecgProvider.EcgSamples
+                .Sample(TimeSpan.FromSeconds(1))
+                .ObserveOn(dispatcherScheduler)
+                .Subscribe(OnEcgSample);
         }
 
+
+        private void OnEcgSample(double ecgSample) => 
+            BPM = ecgSample;
 
         private void OnTestStateChanged(TestState testState)
         {
@@ -76,6 +85,13 @@ namespace Norav.HRM.Client.WPF.ViewModels
             set => SetProperty(ref patientName, value);
         }
 
+        public double BPM
+        {
+            get => bpm;
+            set => SetProperty(ref bpm, value);
+        }
+
+
         public double? SampleIntervalSec
         {
             get => sampleIntervalSec;
@@ -99,6 +115,7 @@ namespace Norav.HRM.Client.WPF.ViewModels
         public DelegateCommand Stop => new(ExecuteStop);
         public DelegateCommand Print => new(ExecutePrint);
         public DelegateCommand Exit => new(ExecuteExit);
+
 
 
         private void ExecuteStart()

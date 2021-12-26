@@ -27,6 +27,10 @@
         </WrapPanel>
 
         <WrapPanel Orientation="Vertical" DockPanel.Dock="Right" Margin="20,0,20,0" >
+            <TextBlock HorizontalAlignment="Center" Background="LimeGreen">
+                <Run Text="{Binding BPM, Mode=TwoWay, StringFormat='0'}" /> <Run Text=" BPM" />
+            </TextBlock>
+            <Separator />
             <Button Content="Start" Command="{Binding Start}" 
                     Visibility="{Binding IsExecuting, Converter={StaticResource InvertedBooleanToVisibility}}" />
             <Button Content="Stop" Command="{Binding Stop}" 

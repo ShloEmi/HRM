@@ -6,7 +6,10 @@ namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
     {
         void Start(double? sampleIntervalSec, double? testTimeMin);
         void Stop();
+
         IObservable<TestState> TestStateChanged { get; }
+        IObservable<double> EcgSamples { get; }
+
     }
 
     public enum TestState

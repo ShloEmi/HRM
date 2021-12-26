@@ -1,5 +1,6 @@
 ﻿using log4net;
 using Norav.HRM.Client.WPF.Interfaces;
+using ScottPlot;
 using ScottPlot.Plottable;
 using System;
 using System.Drawing;
@@ -9,7 +10,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
-using ScottPlot;
 
 namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
 {
@@ -20,6 +20,8 @@ namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
         private readonly CompositeDisposable eventSubscription = new();
         private CompositeDisposable startTimerSubscription;
         private readonly Subject<TestState> testStateChanged = new();
+        private readonly Subject<double> ecgSamples = new();
+        
 
         private readonly IPlotPresenter plotPresenter;
 
@@ -55,6 +57,7 @@ namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
 
             InitHelperLines(plot);
 
+            dataBuffer[0] = 60d;
             signalPlot = plot.AddSignal(dataBuffer, 1d, Color.Black);
             plotPresenter.Refresh();
         }
@@ -133,11 +136,22 @@ namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
 
         private void OnEcgSamples(long elapsed)
         {
-            double randomValue = Math.Round(randomGenerator.NextDouble() - .5, 3);
-            dataBuffer[nextDataIndex] = dataBuffer[nextDataIndex - 1] + randomValue;
+            double randomEcg = Math.Round(randomGenerator.NextDouble()*3 - 1.5, 3);
+            double lastValue = dataBuffer[nextDataIndex - 1];
+
+            double nextEcg;
+            if ((lastValue + randomEcg) % 200 >= 0)
+                nextEcg = (lastValue + randomEcg) % 200;
+            else
+                nextEcg = (lastValue - randomEcg) % 200;
+
+
+            dataBuffer[nextDataIndex] = nextEcg;
             signalPlot.MaxRenderIndex = nextDataIndex;
             
             nextDataIndex += 1;
+
+            ecgSamples.OnNext(nextEcg);
         }
 
         private void OnTestTimeOver(long elapsed)
@@ -158,5 +172,6 @@ namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
 
 
         public IObservable<TestState> TestStateChanged => testStateChanged;
+        public IObservable<double> EcgSamples => ecgSamples;
     }
 }
