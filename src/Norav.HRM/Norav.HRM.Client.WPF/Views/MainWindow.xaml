@@ -23,14 +23,14 @@
         <WrapPanel DockPanel.Dock="Top" Margin="48,0,0,0" >
             <TextBlock Margin="0,0,0,22">
                 <Run Text="PatientName" BaselineAlignment="Center"/>
-                <TextBox Text="{Binding PatientName}" 
+                <TextBox Text="{Binding PatientName, FallbackValue='John Doe'}" 
                          Margin="48,0,0,0"
                          MinWidth="222"/>
             </TextBlock>
         </WrapPanel>
 
         <WrapPanel DockPanel.Dock="Right" Margin="48,0,0,0" >
-            <WrapPanel Orientation="Vertical">
+            <WrapPanel Orientation="Vertical" Margin="0,0,40,0">
                 <Button Content="Start" Command="{Binding Start}" />
                 <Button Content="Stop" Command="{Binding Stop}" />
                 <Button Content="Print"  Command="{Binding Print}" />

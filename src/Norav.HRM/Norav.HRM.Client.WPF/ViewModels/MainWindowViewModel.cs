@@ -1,8 +1,6 @@
-﻿using Norav.HRM.Client.WPF.Interfaces;
-using Norav.HRM.Client.WPF.Modules;
+﻿using Norav.HRM.Client.WPF.Modules;
 using Prism.Commands;
 using Prism.Mvvm;
-using System.IO.Abstractions;
 using System.Windows;
 using System.Windows.Input;
 
@@ -13,9 +11,9 @@ namespace Norav.HRM.Client.WPF.ViewModels
         private readonly IEcgProvider ecgProvider;
 
         private string title;
-        private string patientName;
+        private string patientName = "John Doe";
         
-        public MainWindowViewModel(IPlotPresenter plotPresenter, IFileSystem fileSystem, IEcgProvider ecgProvider)
+        public MainWindowViewModel(IEcgProvider ecgProvider)
         {
             this.ecgProvider = ecgProvider;
             Title = "Heartbeat Test";

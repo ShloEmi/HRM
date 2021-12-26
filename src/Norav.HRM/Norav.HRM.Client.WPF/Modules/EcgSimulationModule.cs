@@ -31,25 +31,24 @@ namespace Norav.HRM.Client.WPF.Modules
             rand = new Random(0);
 
             eventSubscription.Add(applicationEvents.Initializing.Subscribe(OnInitialized));
-            // eventSubscription.Add(applicationEvents.Starting.Subscribe(OnStarting));
+            eventSubscription.Add(applicationEvents.Starting.Subscribe(OnStarting));
             eventSubscription.Add(applicationEvents.Exiting.Subscribe(OnExiting));
         }
 
         private void OnInitialized(Unit _)
         {
             plotPresenter.Plot.YLabel("Value");
-            plotPresenter.Plot.XLabel("Sample Number");
+            plotPresenter.Plot.XLabel("Time [Sec]");
 
-            plotPresenter.Plot?.Title("Heartbeat graph");
+            plotPresenter.Plot?.Title("Heartbeat graph", false);
 
             signalPlot = plotPresenter.Plot.AddSignal(dataBuffer);
         }
 
-        /*
         private void OnStarting(Unit _)
         {
+            /* TODO: Shlomi, add log */
         }
-        */
 
         private void OnExiting(Unit _)
         {
@@ -62,14 +61,12 @@ namespace Norav.HRM.Client.WPF.Modules
         void IEcgProvider.Start()
         {
             startTimerSubscription.Add(Observable
-                //.Interval(TimeSpan.FromMilliseconds(1d/1000 /*Hz*/))
-                .Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(1d/10 /*Hz*/))
-                .ObserveOn(new DispatcherScheduler(Dispatcher.CurrentDispatcher))
+                .Interval(TimeSpan.FromSeconds(1d/1000d /*Hz*/))
+                .ObserveOn(DispatcherScheduler.Current)
                 .Subscribe(OnEcgSamples));
 
             startTimerSubscription.Add(Observable
-                // .Interval(TimeSpan.FromMilliseconds(1d/50 /*Hz*/))
-                .Timer(TimeSpan.Zero, TimeSpan.FromMilliseconds(1d/5 /*Hz*/))
+                .Interval(TimeSpan.FromSeconds(1d/5d /*Hz*/))
                 .ObserveOn(DispatcherScheduler.Current)
                 .Subscribe(OnRender));
         }
