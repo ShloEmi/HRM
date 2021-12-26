@@ -1,13 +1,13 @@
-﻿using System;
+﻿using log4net;
+using Norav.HRM.Client.WPF.Interfaces;
+using ScottPlot.Plottable;
+using System;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
-using log4net;
-using Norav.HRM.Client.WPF.Interfaces;
-using ScottPlot.Plottable;
 
 namespace Norav.HRM.Client.WPF.Modules.EcgSimulation
 {

@@ -30,7 +30,7 @@ namespace Norav.HRM.Client.WPF.ViewModels
         private static readonly string ReportsFolder = "Reports";
 
 
-        public MainWindowViewModel(IEcgProvider ecgProvider, IPlotPresenter plotPresenter, IFileSystem fileSystem)
+        public MainWindowViewModel(IEcgProvider ecgProvider, IPlotPresenter plotPresenter, IFileSystem fileSystem, IScheduler dispatcherScheduler)
         {
             this.ecgProvider = ecgProvider;
             this.plotPresenter = plotPresenter;
@@ -38,7 +38,7 @@ namespace Norav.HRM.Client.WPF.ViewModels
             Title = "Heartbeat Test";
 
             ecgProvider.TestStateChanged
-                    .ObserveOn(DispatcherScheduler.Current)
+                    .ObserveOn(dispatcherScheduler)
                     .Subscribe(OnTestStateChanged);
         }
 
