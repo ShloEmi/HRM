@@ -1,15 +1,19 @@
-﻿using Norav.HRM.Client.WPF.Modules;
+﻿using log4net;
+using Norav.HRM.Client.WPF.Modules;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Reflection;
 using System.Windows;
 
 namespace Norav.HRM.Client.WPF.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
+
         private readonly IEcgProvider ecgProvider;
 
         private string title;
@@ -35,17 +39,19 @@ namespace Norav.HRM.Client.WPF.ViewModels
             switch (testState)
             {
                 case TestState.Started:
-                    /* TODO: Shlomi, log */
+                    Log.Info("called, TestState.Started");
                     break;
                 case TestState.Stopped:
-                    /* TODO: Shlomi, log */
+                    Log.Info("called, TestState.Stopped");
                     break;
                 case TestState.TestTimeOver:
+                    Log.Info("called, TestState.TestTimeOver");
+
                     ExecuteStop();
                     break;
                 default:
-                    /* TODO: Shlomi, log */
-                    throw new ArgumentOutOfRangeException(nameof(testState), testState, null);
+                    Log.Error($"Unknown/Unhandled TestState: {(int)testState}");
+                    break;
             }
         }
 

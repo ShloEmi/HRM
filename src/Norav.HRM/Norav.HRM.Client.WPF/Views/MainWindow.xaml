@@ -26,22 +26,20 @@
             </TextBlock>
         </WrapPanel>
 
-        <WrapPanel DockPanel.Dock="Right" Margin="48,0,0,0" >
-            <WrapPanel Orientation="Vertical" Margin="0,0,40,0">
-                <Button Content="Start" Command="{Binding Start}" 
-                        Visibility="{Binding IsExecuting, Converter={StaticResource InvertedBooleanToVisibility}}" />
-                <Button Content="Stop" Command="{Binding Stop}" 
-                        Visibility="{Binding IsExecuting, Converter={StaticResource BooleanToVisibility}}" />
+        <WrapPanel Orientation="Vertical" DockPanel.Dock="Right" Margin="20,0,20,0" >
+            <Button Content="Start" Command="{Binding Start}" 
+                    Visibility="{Binding IsExecuting, Converter={StaticResource InvertedBooleanToVisibility}}" />
+            <Button Content="Stop" Command="{Binding Stop}" 
+                    Visibility="{Binding IsExecuting, Converter={StaticResource BooleanToVisibility}}" />
 
-                <mah:NumericUpDown Value="{Binding SampleIntervalSec}" ToolTip="Sample Interval [Sec]" Minimum="0.01" Maximum="60"
-                                   NumericInputMode="Decimal" ParsingNumberStyle="Float" StringFormat="0.##" />
-                <mah:NumericUpDown Value="{Binding TestTimeMin}" ToolTip="Test Time [Min]" Minimum="0.1" Maximum="600"
-                                   NumericInputMode="Decimal" ParsingNumberStyle="Float" StringFormat="0.##" />
-                <Separator />
-                <Button Content="Print"  Command="{Binding Print}" />
-                <Separator />
-                <Button Content="Exit" Command="{Binding Exit}" />
-            </WrapPanel>
+            <mah:NumericUpDown Value="{Binding SampleIntervalSec}" ToolTip="Sample Interval [Sec]" Minimum="0.01" Maximum="60"
+                               NumericInputMode="Decimal" ParsingNumberStyle="Float" StringFormat="0.##" />
+            <mah:NumericUpDown Value="{Binding TestTimeMin}" ToolTip="Test Time [Min]" Minimum="0.1" Maximum="600"
+                               NumericInputMode="Decimal" ParsingNumberStyle="Float" StringFormat="0.##" />
+            <Separator />
+            <Button Content="Print"  Command="{Binding Print}" />
+            <Separator />
+            <Button Content="Exit" Command="{Binding Exit}" />
         </WrapPanel>
 
         <WpfPlot Name="PlotPresenter" DockPanel.Dock="Bottom" />

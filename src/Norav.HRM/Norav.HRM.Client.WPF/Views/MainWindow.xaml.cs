@@ -10,7 +10,7 @@ namespace Norav.HRM.Client.WPF.Views
         {
             // REMARKS: workaround for: 'plot not supporting MVVM'
             containerRegistry.Register<IPlotPresenter>(() => this); /* TODO: Shlomi, can this workaround be avoided? */
-
+            
             InitializeComponent();
         }
         

@@ -1,4 +1,5 @@
-﻿using Norav.HRM.Client.WPF.Interfaces;
+﻿using log4net;
+using Norav.HRM.Client.WPF.Interfaces;
 using Prism.Ioc;
 using Prism.Modularity;
 using ScottPlot.Plottable;
@@ -8,11 +9,14 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Reflection;
 
 namespace Norav.HRM.Client.WPF.Modules
 {
     public class EcgSimulationProvider : IEcgProvider
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
+
         private readonly CompositeDisposable eventSubscription = new();
         private CompositeDisposable startTimerSubscription;
         private readonly Subject<TestState> testStateChanged = new();
@@ -41,20 +45,23 @@ namespace Norav.HRM.Client.WPF.Modules
         private void OnInitialized(Unit _)
         {
             plotPresenter.Plot.YLabel("Value");
-            plotPresenter.Plot.XLabel("Time [Sec]");
+            plotPresenter.Plot.XLabel("Sample");
 
             plotPresenter.Plot?.Title("Heartbeat graph", false);
 
             signalPlot = plotPresenter.Plot.AddSignal(dataBuffer);
+            plotPresenter.Refresh();
         }
 
         private void OnStarting(Unit _)
         {
-            /* TODO: Shlomi, add log */
+            Log.Info("called");
         }
 
         private void OnExiting(Unit _)
         {
+            Log.Info("called");
+
             eventSubscription.Clear();
             startTimerSubscription?.Clear();
         }
@@ -101,20 +108,8 @@ namespace Norav.HRM.Client.WPF.Modules
 
         private void OnEcgSamples(long elapsed)
         {
-            if (nextDataIndex >= dataBuffer.Length)
-            {
-                throw new OverflowException("dataBuffer isn't long enough to accomodate new data");
-                // in this situation the solution would be:
-                //   1. clear the plot
-                //   2. create a new larger array
-                //   3. copy the old data into the start of the larger array
-                //   4. plot the new (larger) array
-                //   5. continue to update the new array
-            }
-
             double randomValue = Math.Round(randomGenerator.NextDouble() - .5, 3);
-            double latestValue = dataBuffer[nextDataIndex - 1] + randomValue;
-            dataBuffer[nextDataIndex] = latestValue;
+            dataBuffer[nextDataIndex] = dataBuffer[nextDataIndex - 1] + randomValue;
             signalPlot.MaxRenderIndex = nextDataIndex;
             
             nextDataIndex += 1;
