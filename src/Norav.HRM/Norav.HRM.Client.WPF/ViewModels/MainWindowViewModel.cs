@@ -1,8 +1,12 @@
 ﻿using log4net;
+using Norav.HRM.Client.WPF.Interfaces;
 using Norav.HRM.Client.WPF.Modules.EcgSimulation;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
+using System.IO;
+using System.IO.Abstractions;
+using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reflection;
@@ -15,17 +19,22 @@ namespace Norav.HRM.Client.WPF.ViewModels
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
         private readonly IEcgProvider ecgProvider;
+        private readonly IPlotPresenter plotPresenter;
+        private readonly IFileSystem fileSystem;
 
         private string title;
         private string patientName = "John Doe";
         private double? sampleIntervalSec = 10;
         private double? testTimeMin = 60;
         private bool isExecuting;
+        private static readonly string ReportsFolder = "Reports";
 
 
-        public MainWindowViewModel(IEcgProvider ecgProvider)
+        public MainWindowViewModel(IEcgProvider ecgProvider, IPlotPresenter plotPresenter, IFileSystem fileSystem)
         {
             this.ecgProvider = ecgProvider;
+            this.plotPresenter = plotPresenter;
+            this.fileSystem = fileSystem;
             Title = "Heartbeat Test";
 
             ecgProvider.TestStateChanged
@@ -106,6 +115,29 @@ namespace Norav.HRM.Client.WPF.ViewModels
 
         private void ExecutePrint()
         {
+            EnsureReportsFolder();
+
+            var reportPath = $@"{ReportsFolder}\{PatientNameAsValidFileName()}.{ValidFileNameTimeStamp()}.png";
+
+            plotPresenter.Plot.SaveFig(reportPath);
+        }
+
+        private static string ValidFileNameTimeStamp()
+        {
+            return DateTime.Now.ToString("s").Replace(":", "-");
+        }
+
+        private string PatientNameAsValidFileName()
+        {
+            return Path.GetInvalidFileNameChars().Aggregate(PatientName, (current, c) => current.Replace(c, '_'));
+        }
+
+        private void EnsureReportsFolder()
+        {
+            if (fileSystem.Directory.Exists(ReportsFolder))
+                return;
+
+            fileSystem.Directory.CreateDirectory(ReportsFolder);
         }
 
         private void ExecuteExit() => 
